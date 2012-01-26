@@ -28,7 +28,7 @@ class My_Model extends CI_Model{
         if(is_numeric($options)){
             $temp_options = $options;
             $options = array();
-            $options['id'] = $temp_options;
+            $options[$this->primary_key] = $temp_options;
         }
         
         //If a string is passed assume it's a select statement
@@ -39,13 +39,13 @@ class My_Model extends CI_Model{
         }
 
         //If the options array contains an id (or ids) the just select those records
-        if(isset($options['id']) AND !empty($options['id'])){
+        if(isset($options[$this->primary_key]) AND !empty($options[$this->primary_key])){
             //Make sure the IDs are in an array
-            if(!is_array($options['id'])){
-                $options['id'] = array($options['id']);
+            if(!is_array($options[$this->primary_key])){
+                $options[$this->primary_key] = array($options[$this->primary_key]);
             }
 
-            $this->db->where_in($this->primary_key, $options['id']);
+            $this->db->where_in($this->primary_key, $options[$this->primary_key]);
             
         }
         
@@ -101,23 +101,20 @@ class My_Model extends CI_Model{
 
         $data = $this->db->get($this->table_name);
 
-        dump($this->db->last_query());
-
         //Return type
-        $return_type = "result_array";
-        if(isset($options['return_type']) AND !empty($options['return_type'])){
-            $return_type = $options['return_type'];
+        if($data->num_rows() > 1){
+            $return_type = "result_array";
+        }
+        else{
+            $return_type = "row_array";
         }
 
-
-
-        dump($data->$return_type());
-
-        return $data;
+        return $data->$return_type();
     }
 
     function save($data, $id = false)
     {
+
         if(!$data){
             return false;
         }
@@ -143,6 +140,73 @@ class My_Model extends CI_Model{
 
         //An insert
 
+       
+        if(is_array($data) AND isset($data[0]) AND is_array($data[0])){
+            
+            //Multiple array
+            $id_array = array();
+            foreach ($data as $data) {
+                
+                $data = $this->_remove_non_fields($data);
+
+                //If there's required fields make sure they're present
+                if(isset($this->required_fields) AND ! $this->_required_fields($data, $this->required_fields)){
+                    return false;
+                }
+
+                //Do the update
+                $this->db->insert($this->table_name, $data);
+                $id_array[] = $this->db->insert_id();
+
+
+            }
+
+            return $id_array;
+        }
+
+        $data = $this->_remove_non_fields($data);
+
+        //If there's required fields make sure they're present
+        if(isset($this->required_fields) AND ! $this->_required_fields($data, $this->required_fields)){
+            return false;
+        }
+
+        //Do the update
+        $this->db->insert($this->table_name, $data);
+
+        return $this->db->insert_id();
+
+    }
+
+    function delete($ids = null){
+
+        if(!isset($ids)){
+            show_error("You must pass a single <span style='font-family: courier;'>$this->primary_key</span> as a numerical value or an array of <span style='font-family: courier;'>$this->primary_key</span>'s");
+        }
+
+        //is the $ids variable a number?
+        if(is_numeric($ids)){
+            $id_array[] = $ids;
+        }
+        else{
+            $id_array = $ids;
+        }
+
+        if(!is_array($id_array)){
+            show_error("You must pass a single <span style='font-family: courier;'>$this->primary_key</span> as a numerical value or an array of <span style='font-family: courier;'>$this->primary_key</span>'s");
+        }
+
+        foreach ($id_array as $id) {
+            $this->db->where($this->primary_key, $id);
+            $this->db->delete($this->table_name);
+        }
+
+        return true;
+
+    }
+
+    function _remove_non_fields($data)
+    {
         //remove any fields that don't exist
         foreach ($data as $key => $value) {
             if(!$this->db->field_exists($key, $this->table_name)){
@@ -151,18 +215,7 @@ class My_Model extends CI_Model{
             } 
         }
 
-        //If there's required fields make sure they're present
-        if(isset($this->required_fields) AND ! $this->_required_fields($data, $this->required_fields)){
-            return false;
-        }
-
-
-
-        //Do the update
-        $this->db->insert($this->table_name, $data);
-
-        return $this->db->insert_id();
-
+        return $data;
     }
 
 

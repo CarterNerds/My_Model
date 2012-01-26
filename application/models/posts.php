@@ -9,8 +9,8 @@ class Posts extends MY_Model{
         //Set the model info
         $this->table_name = "posts";
         $this->primary_key = "post_id";
-        $this->order_by = "post_title";
-        $this->sort = "asc";
+        $this->order_by = "post_id";
+        $this->sort = "desc";
         
         $this->required_fields = array(
             "post_title",
