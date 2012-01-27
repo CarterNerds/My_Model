@@ -1,0 +1,12 @@
+A My_Model class to provide CRUD functionality for other Model cllasses to inherit actions.
+
+Extending Class
+<hr>
+A model class would extend the My_Model class in the following way
+
+
+Get
+<hr>
+Intended to provide the majority of get requests
+
+//Get a single entry by it's id
