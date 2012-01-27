@@ -1,4 +1,4 @@
-A My_Model class to provide CRUD functionality for other Model cllasses to inherit actions.
+A My_Model class to provide CRUD functionality for other Model classes to inherit actions.
 
 Extending Class
 **************************************************************************************
