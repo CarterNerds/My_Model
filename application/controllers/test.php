@@ -58,10 +58,12 @@ class Test extends CI_Controller{
                 
                 //$id = $this->posts->save($data);
                 
-                $this->posts->delete(1);
+                $this->posts->delete(3);
 
                 //dump($id);
-                $options['post_id'] = array(1,2,3);
+                $this->posts->sort = "asc";
+                $options['post_id'] = array(18,2);
+                $options['key_value'] = array("post_title", "post_author");
                 $data = $this->posts->get($options);
                 dump($data);
 

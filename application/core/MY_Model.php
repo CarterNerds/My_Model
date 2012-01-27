@@ -101,6 +101,23 @@ class My_Model extends CI_Model{
 
         $data = $this->db->get($this->table_name);
 
+        //No results
+        if(!$data){
+            return false;
+        }
+        
+        //Key value array
+        if(isset($options['key_value'])){
+            // Turn results into key=>value pair array.
+                $key_value_array = array();
+                
+                foreach ($data->result_array() as $row) {
+                    $key_value_array[$row[$options['key_value'][0]]] = $row[$options['key_value'][1]];
+                }
+                
+            return $key_value_array;
+        }
+
         //Return type
         if($data->num_rows() > 1){
             $return_type = "result_array";
@@ -108,7 +125,6 @@ class My_Model extends CI_Model{
         else{
             $return_type = "row_array";
         }
-
         return $data->$return_type();
     }
 
