@@ -26,6 +26,7 @@ class Posts extends MY_Model{
         //Default sort direction
         $this->sort = "desc";
         
+        //Required fields
         $this->required_fields = array(
             "post_title",
             "post_body",
@@ -39,10 +40,13 @@ class Posts extends MY_Model{
 }
 
 
+======================================================================================
+
 
 Get
 **************************************************************************************
 Intended to provide the majority of get requests
+**************************************************************************************
 
 //Get all entries
 $this->posts->get();
@@ -92,3 +96,80 @@ $this->posts->offset = 20;
 $this->posts->get();
 
 
+======================================================================================
+
+
+
+Save
+**************************************************************************************
+Intended to provide the majority of insert and update requests
+
+Adding required fields to the post array will validate 
+-their presence and that they have a value
+
+//Required fields example
+$this->required_fields = array(
+    "post_title",
+    "post_body",
+    "post_pubdate",
+    "post_author",
+    "post_slug"
+);
+
+When saving an entry fields will be checked to ensure they exist.
+
+**************************************************************************************
+
+//Save a single entry
+$data["post_title"] = "Post title";
+$data["post_body"] = "Hello dolor sit amet, consectetur adipiscing elit.";
+$data["post_pubdate"] = "2012-01-27 16:57:48";
+$data["post_author"] ="Paul Beardsell";
+$data["post_slug"] = "post-title";
+$insert_id = $this->posts->save($data);
+
+//Save a multiple entries
+$data[0]["post_title"] = "Post title";
+$data[0]["post_body"] = "Hello dolor sit amet, consectetur adipiscing elit.";
+$data[0]["post_pubdate"] = "2012-01-27 16:57:48";
+$data[0]["post_author"] ="Paul Beardsell";
+$data[0]["post_slug"] = "post-title";
+$data[1]["post_title"] = "Post title 2";
+$data[1]["post_body"] = "Hello dolor sit amet, consectetur adipiscing elit.";
+$data[1]["post_pubdate"] = "2012-01-27 16:57:48";
+$data[1]["post_author"] ="Paul Beardsell";
+$data[1]["post_slug"] = "post-title-2";
+$insert_id_array = $this->posts->save($data);
+
+//Update an entry
+$data["post_title"] = "This is the post title";
+$data["post_slug"] = "this-is-the-post-title";
+$this->posts->save($data, 1);
+
+
+======================================================================================
+
+
+Delete
+**************************************************************************************
+Intended to provide the majority of delete requests
+**************************************************************************************
+
+//Delete a single entry
+$this->posts->delete(1);
+
+//Delete a multiple entries
+$this->posts->delete(array(1,2));
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+Inspiration from:
+
+Jamie Rumbelow
+@jamierumbelow 
+
+Joost van Veen
+@joostvanveen 
+
+/////////////////////////////////////////////////////////////////////////////////////
