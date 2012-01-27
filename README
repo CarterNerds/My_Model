@@ -1,12 +1,94 @@
 A My_Model class to provide CRUD functionality for other Model cllasses to inherit actions.
 
 Extending Class
-<hr>
+**************************************************************************************
 A model class would extend the My_Model class in the following way
+
+class Posts extends MY_Model{
+    
+    function __construct()
+    {
+        parent::__construct();
+
+        /***************************************
+        Set the model info
+        ***************************************/
+        
+        //Table name
+        $this->table_name = "posts";
+
+        //Primary Key
+        $this->primary_key = "post_id";
+
+        //Default order by
+        $this->order_by = "post_id";
+
+        //Default sort direction
+        $this->sort = "desc";
+        
+        $this->required_fields = array(
+            "post_title",
+            "post_body",
+            "post_pubdate",
+            "post_author",
+            "post_slug"
+        );
+
+    }
+
+}
+
 
 
 Get
-<hr>
+**************************************************************************************
 Intended to provide the majority of get requests
 
+//Get all entries
+$this->posts->get();
+
 //Get a single entry by it's id
+$this->posts->get(1);
+
+//Get multiple entries
+$options['post_id'] = array(1,2);
+$this->posts->get($options);
+
+//Get all values sorted in DESC order
+$this->posts->sort = "desc";
+$this->posts->get();
+
+//Select all entries return a specific field
+$this->posts->get("post_id");
+
+
+//Select all entries return multiple fields
+$options['select'] = array("post_title", "post_id");
+$this->posts->get($options);
+
+//Select all with a condition
+$options['where'] = array("post_title" => "This is my first post");
+$this->posts->get($options);
+
+//Select all with a comparison condition
+$options['where'] = array("post_pubdate <" => '2011-12-18');
+$this->posts->get($options);
+
+//Select all like (and like)
+$options['like'] = array("post_author" => "Some", "post_body" => "Lorem");
+$this->posts->get($options);
+
+//Select all like (or like)
+$options['or_like'] = array("post_author" => "Some", "post_body" => "Lorem");
+$this->posts->get($options);   
+
+//Get all and return as a key value array
+$options['key_value'] = array("post_title", "post_author");
+$this->posts->get($options);
+
+//Select all with a limit and offset
+$this->posts->limit = 10;
+$this->posts->offset = 20;
+$this->posts->get();
+
+
