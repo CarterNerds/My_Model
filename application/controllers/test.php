@@ -66,6 +66,12 @@ class Test extends CI_Controller{
                 $options['key_value'] = array("post_title", "post_author");
                 $data = $this->posts->get($options);
                 dump($data);
+                
+                $this->load->library("content_generator");
+                
+                echo($this->content_generator->populate_table("posts"));
+                
+                populate_table();
 
 
 	}
